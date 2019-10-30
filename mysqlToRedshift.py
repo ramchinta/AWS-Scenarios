@@ -20,7 +20,7 @@ def readmysql():
     '''print(description)
     for x in description:
         print(x[0])
-'''
+        
     # Insert data into Redshift
     redshift_table_name = 'lakshman.users'
     REDSHIFT_HOST = 'redshift-cluster-1.cfnzlezppkcj.us-east-1.redshift.amazonaws.com'
