@@ -22,7 +22,7 @@ def createfile():
         for j in i:
             f.write(str(j) + '\t')
             #print(type(j))
-        #f.write('\t')
+        f.write('\n')
     f.close()
 
 createfile()
