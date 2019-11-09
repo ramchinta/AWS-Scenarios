@@ -34,7 +34,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.aliascreation">
+  <component name="RunManager" selected="Python.ccpa_final">
     <configuration name="Poc1" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="AWS-Scenarios" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -142,11 +142,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.ccpa_final" />
+        <item itemvalue="Python.test" />
         <item itemvalue="Python.aliascreation" />
         <item itemvalue="Python.ccpa_second" />
-        <item itemvalue="Python.ccpa_final" />
         <item itemvalue="Python.Poc1" />
-        <item itemvalue="Python.test" />
       </list>
     </recent_temporary>
   </component>
