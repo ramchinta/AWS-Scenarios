@@ -10,16 +10,20 @@ def ccpa():
     like = []
 
 
-    '''Connect to the mysql rds database'''
     mysql_conn = pymysql.connect(host=MYSQL_HOST, port=3306, user=MYSQL_USERNAME, password=MYSQL_PASSWORD,database=MYSQL_DATABASE)
     mysql_cur = mysql_conn.cursor()
-    '''Query to get the column data from CCPA_SCHEMA_SET'''
-    mysql_cur.execute("select productID from lakshman.poc1")
+    mysql_cur.execute("select max(userid) from lakshman.users")
     rows = mysql_cur.fetchall()
     print(rows)
+    print(rows[0][0] + 1)
+
     for i in rows:
+        print(rows[i][0]+1)
         for j in i:
-            column.append(j)
+            print('K')
+            z= (j+1)
+            print(z)
+            #column.append(j)
     fullmatch = [B for B in column if B.lower() in (x.lower() for x in column2)]
     print(fullmatch)
     for i in fullmatch:
