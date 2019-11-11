@@ -20,7 +20,7 @@ def ccpa():
         '''Build dataset number'''
         mysql_cur.execute("select (select max(ccpa_dataset) from ccpa_pi_catalog)")
         data = mysql_cur.fetchall()
-        ccpa_dataset = str((data[0][0] + 1))
+        ccpa_dataset = str(1)#str((data[0][0] + 1))
 
         '''Build list of column names'''
         mysql_cur.execute("select ccpa_column from ccpa.ccpa_schema_set")
@@ -38,7 +38,8 @@ def ccpa():
         fullmatch = [B for B in column if B.lower() in (x.lower() for x in alias)]
         '''Insert 100% match columns'''
         for i in fullmatch:
-            mysql_cur.execute("insert into ccpa_pi_catalog(ccpa_category,ccpa_pi_name,ccpa_system,ccpa_schema,ccap_table,ccpa_column,ccpa_Pi,ccpa_for_del,ccpa_pi_pct,ccpa_user,ccpa_date,ccpa_dataset)(select b.ccpa_category,b.ccpa_pi_name,a.ccpa_system ,a.ccpa_schema,a.ccpa_table ,a.ccpa_column,'Y' as ccpa_pi,'N' as ccpa_for_del,avg(b.ccpa_pi_pct + 100),'Backend' as ccpa_user,current_date() as ccpa_date,"+ ccpa_dataset+" as ccpa_dataset from ccpa_schema_set as a inner join ccpa_pi_keyset as b on a.ccpa_column = '"+i+"' and b.ccpa_pi_alias = '"+i+"'))")
+            mysql_cur.execute("insert into ccpa_pi_catalog(ccpa_category,ccpa_pi_name,ccpa_system,ccpa_schema,ccpa_table,ccpa_column,ccpa_Pi,ccpa_exempt_del,ccpa_pi_pct,ccpa_user,ccpa_date,ccpa_dataset)(select b.ccpa_category,b.ccpa_pi_name,a.ccpa_system ,a.ccpa_schema,a.ccpa_table ,a.ccpa_column,'Y' as ccpa_pi,'N' as ccpa_for_del,avg(b.ccpa_pi_pct + 100),'Backend' as ccpa_user,current_date() as ccpa_date,"+ ccpa_dataset+" as ccpa_dataset from ccpa_schema_set as a inner join ccpa_pi_keyset as b on a.ccpa_column = '"+i+"' and b.ccpa_pi_alias = '"+i+"')")
+            print("Yes")
         column = set(column) - set(alias)
         '''Generate Like columns'''
         for i in column:
@@ -47,9 +48,11 @@ def ccpa():
                     likecolumn.append(i)
         '''Insert like columns'''
         for j in likecolumn:
-            mysql_cur.execute("insert into ccpa_pi_catalog(ccpa_category,ccpa_pi_name,ccpa_system,ccpa_schema,ccap_table,ccpa_column,ccpa_Pi,ccpa_for_del,ccpa_pi_pct,ccpa_user,ccpa_date,ccpa_dataset)(select b.ccpa_category,b.ccpa_pi_name,a.ccpa_system ,a.ccpa_schema,a.ccpa_table ,a.ccpa_column,'Y' as ccpa_pi,'N' as ccpa_for_del,avg(b.ccpa_pi_pct + 75),'Backend' as ccpa_user,current_date() as ccpa_date,"+ ccpa_dataset+" as ccpa_dataset from ccpa_schema_set as a inner join ccpa_pi_keyset as b on a.ccpa_column = '"+j+"' and b.ccpa_pi_alias = '"+j+"'))")
-        mysql_cur.execute("insert into ccpa_pi_catalog(ccpa_category,ccpa_pi_name,ccpa_system,ccpa_schema,ccap_table,ccpa_column,ccpa_Pi,ccpa_for_del,ccpa_pi_pct,ccpa_user,ccpa_date,ccpa_dataset)(select ''as ccpa_category,'' as ccpa_pi_name ,a.ccpa_system ,a.ccpa_schema,a.ccpa_table ,a.ccpa_column,'N' as ccpa_pi,'N' as ccpa_for_del,0 as ccpa_pi_pct,'Backend' as ccpa_user,current_date() as ccpa_date,"+ccpa_dataset+ " as ccpa_dataset from ccpa_schema_set as a left join ccpa_pi_catalog as b on b.ccpa_column is null and b.ccap_table is null)")
-
+            mysql_cur.execute("insert into ccpa_pi_catalog(ccpa_category,ccpa_pi_name,ccpa_system,ccpa_schema,ccpa_table,ccpa_column,ccpa_Pi,ccpa_exempt_del,ccpa_pi_pct,ccpa_user,ccpa_date,ccpa_dataset)(select b.ccpa_category,b.ccpa_pi_name,a.ccpa_system ,a.ccpa_schema,a.ccpa_table ,a.ccpa_column,'Y' as ccpa_pi,'N' as ccpa_for_del,avg(b.ccpa_pi_pct + 75),'Backend' as ccpa_user,current_date() as ccpa_date,"+ ccpa_dataset+" as ccpa_dataset from ccpa_schema_set as a inner join ccpa_pi_keyset as b on a.ccpa_column = '"+j+"' and b.ccpa_pi_alias = '"+j+"')")
+            print('Yes2')
+        #mysql_cur.execute("insert into ccpa_pi_catalog(ccpa_category,ccpa_pi_name,ccpa_system,ccpa_schema,ccpa_table,ccpa_column,ccpa_Pi,ccpa_exempt_del,ccpa_pi_pct,ccpa_user,ccpa_date,ccpa_dataset)(select ''as ccpa_category,'' as ccpa_pi_name ,a.ccpa_system ,a.ccpa_schema,a.ccpa_table ,a.ccpa_column,'N' as ccpa_pi,'N' as ccpa_for_del,0 as ccpa_pi_pct,'Backend' as ccpa_user,current_date() as ccpa_date,"+ccpa_dataset+ " as ccpa_dataset from ccpa_schema_set as a left join ccpa_pi_catalog as b on b.ccpa_column is null and b.ccpa_table is null)")
+        mysql_conn.commit()
+        print("Yes3")
         '''Write the log file to s3 : Successful'''
         s3 = boto3.resource('s3')
         obj = s3.Object('axelaardev.com', 'logs/ccpa_pi_catalog/'+str(datetime.now()))
@@ -58,6 +61,7 @@ def ccpa():
 
 
     except:
+        #mysql_cur.execute("insert into ccpa_pi_catalog(ccpa_category,ccpa_pi_name,ccpa_system,ccpa_schema,ccpa_table,ccpa_column,ccpa_Pi,ccpa_for_del,ccpa_pi_pct,ccpa_user,ccpa_date,ccpa_dataset)(select b.ccpa_category,b.ccpa_pi_name,a.ccpa_system ,a.ccpa_schema,a.ccpa_table ,a.ccpa_column,'Y' as ccpa_pi,'N' as ccpa_for_del,avg(b.ccpa_pi_pct + 100),'Backend' as ccpa_user,current_date() as ccpa_date," + ccpa_dataset + " as ccpa_dataset from ccpa_schema_set as a inner join ccpa_pi_keyset as b on a.ccpa_column = '" + i + "' and b.ccpa_pi_alias = '" + i + "'))")
         '''Write the log file to s3: Failed'''
         s3 = boto3.resource('s3')
         obj = s3.Object('axelaardev.com', 'logs/ccpa_pi_catalog/'+str(datetime.now()))
