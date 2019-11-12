@@ -37,6 +37,7 @@ def ccpa():
         print(datetime.now())
         '''100% match columns'''
         fullmatch = [B for B in column if B.lower() == (x.lower() for x in alias)]
+        print(len(fullmatch))
         fullmatch = set(fullmatch)
         print(len(fullmatch))
         column = set(column) - set(fullmatch)
